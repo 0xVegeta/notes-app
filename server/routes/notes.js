@@ -1,15 +1,22 @@
 const express = require("express");
 const { protect } = require("../middlewares/authentication");
-const {createNote} = require('../controller/notes')
+const {
+	createNote,
+	getAllNotes,
+	getNoteById,
+	updateNoteById,
+	deleteNoteById,
+	searchNotes,
+} = require("../controller/notes");
 const notesRouter = express.Router();
 
-notesRouter.get("/", protect, createNote);
-notesRouter.get('/:id')
+notesRouter.get("/search", protect, searchNotes);
+notesRouter.get("/", protect, getAllNotes);
+notesRouter.get("/:id", getNoteById);
 notesRouter.post("/", protect, createNote);
-notesRouter.put('/:id');
-notesRouter.delete('/:id');
-notesRouter.post('/:id/share');
-notesRouter.get('/search');
+notesRouter.put("/:id", protect, updateNoteById);
+notesRouter.delete("/:id", protect, deleteNoteById);
+notesRouter.post("/:id/share", protect);
 
 
 module.exports = notesRouter;
