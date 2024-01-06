@@ -1,15 +1,15 @@
 const Note = require("../models/notes.model");
 const createNote = async (req, res) => {
-  const { textBody } = req.body;
-  if (!textBody) {
-    return res.status(400).json({ error: "Enter all the fields" });
-  }
+	let { textBody } = req.body;
+	if (!textBody) {
+		return res.status(400).json({ error: "Enter all the fields" });
+	}
 
-	const note = new Note({
+	const note = await Note.create({
 		author: req.user,
 		textBody,
 	});
-	await note.save();
+
 	return res
 		.status(200)
 		.json({ textBody: note.textBody, author: req.user.email, id: note._id });
@@ -48,7 +48,6 @@ const getAllNotes = async (req, res) => {
 		});
 		return res.status(200).json({ notes: notesArray });
 	} catch (error) {
-		console.error(error);
 		return res.status(500).json({ error: "Error fetching your notes" });
 	}
 };
@@ -56,8 +55,8 @@ const getAllNotes = async (req, res) => {
 const updateNoteById = async (req, res) => {
 	try {
 		const noteId = req.params.id;
-		const { textBody } = req.body;
-
+		let { textBody } = req.body;
+		if (!textBody) return res.status(400).json({ error: "No new updates" });
 		const note = await Note.findById(noteId);
 
 		if (!noteId || !note) {
@@ -105,7 +104,7 @@ const deleteNoteById = async (req, res) => {
 
 const searchNotes = async (req, res) => {
 	try {
-    const { q } = req.query;
+		const { q } = req.query;
 
 		const notes = await Note.find({
 			author: req.user,
